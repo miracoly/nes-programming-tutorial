@@ -1,0 +1,7 @@
+.idea
+*.o
+*.out
+*.out.dSYM
+*.dbg
+*.nes
+out
