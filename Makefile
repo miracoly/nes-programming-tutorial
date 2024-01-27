@@ -24,6 +24,12 @@ exercises/%.nes: exercises/%.o
 	@echo $@
 	@$(CA) $(CAFLAGS) $< -o $@
 
+nes-graphics.nes: nes-graphics.o nes.cfg
+	@$(LD) $(LDFLAGS) nes-graphics/nes-graphics.o -o nes-graphics/nes-graphics.nes
+
+nes-graphics.o: nes-graphics/nes-graphics.s
+	@$(CA) $(CAFLAGS) nes-graphics/nes-graphics.s -o nes-graphics/nes-graphics.o
+
 clearmem.nes: clearmem.o nes.cfg
 	@$(LD) $(LDFLAGS) clearmem/clearmem.o -o clearmem/clearmem.nes
 
