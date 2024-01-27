@@ -24,7 +24,7 @@ exercises/%.nes: exercises/%.o
 	@echo $@
 	@$(CA) $(CAFLAGS) $< -o $@
 
-clearmem.nes: clearmem.o
+clearmem.nes: clearmem.o nes.cfg
 	@$(LD) $(LDFLAGS) clearmem/clearmem.o -o clearmem/clearmem.nes
 
 clearmem.o: clearmem/clearmem.s
