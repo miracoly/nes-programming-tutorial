@@ -1,6 +1,6 @@
-.include "../const.inc"
-.include "../header.inc"
-.include "../reset.inc"
+.include "const.inc"
+.include "header.inc"
+.include "reset.inc"
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; PRG-ROM
