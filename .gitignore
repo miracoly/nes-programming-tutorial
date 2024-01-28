@@ -4,5 +4,6 @@
 *.out.dSYM
 *.dbg
 *.nes
+*.nes.*
 out
 *.nl

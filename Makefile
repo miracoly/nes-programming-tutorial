@@ -2,15 +2,23 @@ CA = ca65
 LD = ld65
 EMU = fceux
 
-#CAFLAGS =
-LDFLAGS = -C nes.cfg
-#EMUFLAGS =
+CAFLAGS = -g
+
+LDFLAGS = -Ln $@.0
+LDFLAGS += -C nes.cfg
 
 .PHONY all:
-all: main.o nes.cfg
+all: main.nes
+
+main.nes: main.o nes.cfg
+	@echo "Link main.nes"
 	@$(LD) $(LDFLAGS) main.o -o main.nes
+	@echo "Start converting symbols"
+	@ca65-symbls-to-nl --file $@.0 && rm $@.0
+	@echo "Success!"
 
 main.o: main.s
+	@echo "Build main.o"
 	@$(CA) $(CAFLAGS) main.s -o main.o
 
 exercise_sources := $(wildcard exercises/*.s)
@@ -29,4 +37,4 @@ exercises/%.nes: exercises/%.o
 
 .PHONY: clean
 clean:
-	rm -rf **/*.o **/*.out **/*.out.dSYM **/*.dbg **/*.nes
+	rm -rf *.o **/*.o *.out **/*.out **/*.out.dSYM *.dbg **/*.dbg *.nes **/*.nes *.nes.* **/*.nes.*
