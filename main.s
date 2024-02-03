@@ -3,6 +3,11 @@
 .include "reset.inc"
 .include "utils.inc"
 
+.segment "ZEROPAGE"
+score: .res 1
+frame: .res 1                              ; Number of frames
+clock_60: .res 1                              ; clock in seconds
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; PRG-ROM
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -10,6 +15,11 @@
 
 reset:
     INIT_NES
+
+    lda #0
+    sta score
+    sta frame
+    sta clock_60
 
 main:
     PPU_SET_ADDR $3F00
@@ -77,6 +87,14 @@ loop_forever:
 ;; Handlers
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 nmi:
+    inc frame
+    ldy #60
+    cpy frame
+    bne @else
+    inc clock_60
+    ldy #0
+    sty frame
+@else:
     rti
 irq:
     rti
