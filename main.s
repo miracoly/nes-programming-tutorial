@@ -16,7 +16,6 @@ main:
     stx PPU_ADDR
     ldx #$00
     stx PPU_ADDR
-
     jsr load_palette
 
     bit PPU_STATUS
@@ -24,8 +23,14 @@ main:
     stx PPU_ADDR
     ldx #$00
     stx PPU_ADDR
-
     jsr load_background
+
+    bit PPU_STATUS
+    ldx #$23
+    stx PPU_ADDR
+    ldx #$C0
+    stx PPU_ADDR
+    jsr load_attributes
 
 @enable_ppu_rendering:
     lda #%10010000                  ; Enable NMI & set background
@@ -64,6 +69,18 @@ loop_forever:
     rts
 .endproc
 
+;; Load 16 bytes of attributes for first nametable
+.proc load_attributes
+    ldy #0
+@loop:
+    lda attribute_data,Y
+    sta PPU_DATA
+    iny
+    cpy #16                         ; jump if Y == $F0
+    bne @loop
+    rts
+.endproc
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Handlers
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -76,15 +93,15 @@ irq:
 ;; Colors to be loaded by PPU
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 palette_data:
-.byte $0F,$2A,$0C,$3A               ; Background
-.byte $0F,$2A,$0C,$3A
-.byte $0F,$2A,$0C,$3A
-.byte $0F,$2A,$0C,$3A
+.byte $22,$29,$1A,$0F               ; Background
+.byte $22,$36,$17,$0F
+.byte $22,$30,$21,$0F
+.byte $22,$27,$17,$0F
 
-.byte $0F,$2A,$0C,$26               ; Sprites
-.byte $0F,$2A,$0C,$26
-.byte $0F,$2A,$0C,$26
-.byte $0F,$2A,$0C,$26
+.byte $22,$16,$27,$18               ; Sprites
+.byte $22,$1A,$30,$27
+.byte $22,$16,$30,$27
+.byte $22,$0F,$36,$17
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Background to copy into nametable
@@ -98,6 +115,10 @@ background_data:
 .byte $47,$47,$47,$47,$47,$47,$47,$47,$47,$47,$47,$47,$47,$47,$47,$47,$47,$47,$47,$47,$47,$47,$47,$47,$47,$47,$47,$47,$47,$47,$47,$47
 .byte $47,$47,$47,$47,$47,$47,$47,$47,$47,$47,$47,$47,$47,$47,$47,$47,$47,$47,$47,$47,$47,$47,$47,$47,$47,$47,$47,$47,$47,$47,$47,$47
 .byte $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
+
+attribute_data:
+.byte %00000000, %00000000, %10101010, %00000000, %11110000, %00000000, %00000000, %00000000
+.byte %11111111, %11111111, %11111111, %11111111, %11111111, %11111111, %11111111, %11111111
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; CHR-ROM data from external binary files
