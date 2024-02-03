@@ -1,6 +1,7 @@
 .include "const.inc"
 .include "header.inc"
 .include "reset.inc"
+.include "utils.inc"
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; PRG-ROM
@@ -11,30 +12,21 @@ reset:
     INIT_NES
 
 main:
-    bit PPU_STATUS
-    ldx #$3F
-    stx PPU_ADDR
-    ldx #$00
-    stx PPU_ADDR
+    PPU_SET_ADDR $3F00
     jsr load_palette
 
-    bit PPU_STATUS
-    ldx #$20
-    stx PPU_ADDR
-    ldx #$00
-    stx PPU_ADDR
+    PPU_SET_ADDR $2000
     jsr load_background
 
-    bit PPU_STATUS
-    ldx #$23
-    stx PPU_ADDR
-    ldx #$C0
-    stx PPU_ADDR
+    PPU_SET_ADDR $23C0
     jsr load_attributes
 
 @enable_ppu_rendering:
     lda #%10010000                  ; Enable NMI & set background
     sta PPU_CTRL                    ;   to use 2. pattern table ($1000)
+    lda #0
+    sta PPU_SCROLL                  ; Scroll X
+    sta PPU_SCROLL                  ; Scroll Y
     lda #%00011110
     sta PPU_MASK
 

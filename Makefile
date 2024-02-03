@@ -17,7 +17,7 @@ main.nes: main.o nes.cfg
 	@ca65-symbls-to-nl --file $@.0 && rm $@.0
 	@echo "Success!"
 
-main.o: main.s
+main.o: main.s *.inc assets/*
 	@echo "Build main.o"
 	@$(CA) $(CAFLAGS) main.s -o main.o
 
