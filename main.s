@@ -25,7 +25,6 @@ reset:
 main:
     jsr load_palette
     jsr load_background
-    jsr load_attributes
 
 @enable_ppu_rendering:
     lda #%10010000                  ; Enable NMI & set background
@@ -64,26 +63,21 @@ loop_forever:
     sta bg_ptr + 1
 
     PPU_SET_ADDR $2000
+    ldx #0
     ldy #0
 @loop:
     lda (bg_ptr),Y
     sta PPU_DATA
     iny
-    cpy #255                        ; jump if Y == $FF
+    cpy #0
+    beq @increase_hi_byte
+    jmp @loop
+@increase_hi_byte:
+    inc bg_ptr + 1
+    inx
+    cpx #4
     bne @loop
-    rts
-.endproc
 
-;; Load 16 bytes of attributes for first nametable
-.proc load_attributes
-    PPU_SET_ADDR $23C0
-    ldy #0
-@loop:
-    lda attribute_data,Y
-    sta PPU_DATA
-    iny
-    cpy #16                         ; jump if Y == $F0
-    bne @loop
     rts
 .endproc
 
