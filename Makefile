@@ -14,7 +14,7 @@ main.nes: main.o nes.cfg
 	@echo "Link main.nes"
 	@$(LD) $(LDFLAGS) main.o -o main.nes
 	@echo "Start converting symbols"
-	@ca65-symbls-to-nl --file $@.0 && rm $@.0
+	@ca65-symbls-to-nl --file $@.0
 	@echo "Success!"
 
 main.o: main.s *.inc assets/*
