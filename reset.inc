@@ -29,7 +29,11 @@
 @clear_mem:
     sta $0000,X                     ; Clear RAM from $0000 to $00FF
     sta $0100,X                     ; Clear RAM from $0100 to $01FF
+
+    lda #$FF
     sta $0200,X                     ; Clear RAM from $0200 to $02FF
+
+    lda #0
     sta $0300,X                     ; Clear RAM from $0300 to $03FF
     sta $0400,X                     ; Clear RAM from $0400 to $04FF
     sta $0500,X                     ; Clear RAM from $0500 to $05FF
