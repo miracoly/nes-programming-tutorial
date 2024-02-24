@@ -4,6 +4,9 @@
 .include "utils.inc"
 
 .segment "ZEROPAGE"
+buttons: .res 1
+pos_x: .res 1                              ; player x position
+pos_y: .res 1                              ; player y position
 score: .res 1
 frame: .res 1                              ; Number of frames
 clock_60: .res 1                              ; clock in seconds
@@ -16,11 +19,20 @@ bg_ptr: .res 2
 
 reset:
     INIT_NES
-
+@init_variables:
     lda #0
     sta score
     sta frame
     sta clock_60
+
+    ldx #0
+    lda sprite_mario,x
+    sta pos_y
+    inx
+    inx
+    inx
+    lda sprite_mario,x
+    sta pos_x
 
 main:
     jsr load_palette
@@ -129,13 +141,69 @@ loop_forever:
     rts
 .endproc
 
+.proc read_controllers
+    lda #1
+    sta buttons
+    sta JOYPAD1                     ; set latch = 1 to begin 'input' mode
+    lda #0
+    sta JOYPAD1                     ; set latch = 0 to begin 'output' mode
+@loop:
+    lda JOYPAD1                     ; read bit from controller data line
+    ;                                 & inverts it
+    ;                                 also sends signal to clock to shift bits
+    lsr                             ; shift bit into carry
+    rol buttons
+    bcc @loop
+    rts
+.endproc
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Handlers
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 nmi:
 @update_sprites:
     lda #$02
-    sta $4014
+    sta PPU_OAM_DMA
+@read_buttons:
+    jsr read_controllers
+@check_right_button:
+    lda buttons
+    and #BUTTON_RIGHT
+    beq @check_left_button
+    inc pos_x
+@check_left_button:
+    lda buttons
+    and #BUTTON_LEFT
+    beq @check_down_button
+    dec pos_x
+@check_down_button:
+    lda buttons
+    and #BUTTON_DOWN
+    beq @check_up_button
+    inc pos_y
+@check_up_button:
+    lda buttons
+    and #BUTTON_UP
+    beq :+
+    dec pos_y
+:
+@update_sprite_pos:
+    lda pos_x
+    sta $0203
+    sta $020B
+    clc
+    adc #8
+    sta $0207
+    sta $020F
+
+    lda pos_y
+    sta $0200
+    sta $0204
+    clc
+    adc #8
+    sta $0208
+    sta $020C
+
 @update_frame_and_clock:
     inc frame
     ldy #60
