@@ -5,12 +5,17 @@
 
 .segment "ZEROPAGE"
 buttons: .res 1
-pos_x: .res 1                              ; player x position
-pos_y: .res 1                              ; player y position
+
+pos_x: .res 2                              ; player x position - xhi.xlo
+pos_y: .res 2                              ; player y position - yhi.ylo
+velo_x: .res 1                              ; player speed in px per 256 frames
+velo_y: .res 1                              ; player speed in px per 256 frames
+
 score: .res 1
 frame: .res 1                              ; Number of frames
 clock_60: .res 1                              ; clock in seconds
 bg_ptr: .res 2
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; PRG-ROM
@@ -25,14 +30,17 @@ reset:
     sta frame
     sta clock_60
 
+    lda #20
+    sta velo_x                      ; velocity is 20 px per 256 frames
+
     ldx #0
     lda sprite_mario,x
-    sta pos_y
+    sta pos_y+1
     inx
     inx
     inx
     lda sprite_mario,x
-    sta pos_x
+    sta pos_x+1
 
 main:
     jsr load_palette
@@ -169,8 +177,26 @@ nmi:
 @check_right_button:
     lda buttons
     and #BUTTON_RIGHT
-    beq @check_left_button
-    inc pos_x
+    beq @not_right
+    lda velo_x
+    clc
+    adc #ACCEL
+    cmp #MAX_SPEED
+    bcc :+
+    lda #MAX_SPEED
+:
+    sta velo_x
+    jmp @check_left_button
+@not_right:
+    lda velo_x
+    cmp #BRAKE
+    bcs :+
+    lda #BRAKE+1                    ; force it to be brake + 1 for carry flag
+:
+    sec
+    sbc #ACCEL
+    sta velo_x
+
 @check_left_button:
     lda buttons
     and #BUTTON_LEFT
@@ -187,8 +213,16 @@ nmi:
     beq :+
     dec pos_y
 :
-@update_sprite_pos:
-    lda pos_x
+@udpate_sprite_pos:
+    lda velo_x
+    clc
+    adc pos_x
+    sta pos_x
+    lda #0
+    adc pos_x+1
+    sta pos_x+1
+@draw_sprite:
+    lda pos_x+1
     sta $0203
     sta $020B
     clc
@@ -196,7 +230,7 @@ nmi:
     sta $0207
     sta $020F
 
-    lda pos_y
+    lda pos_y+1
     sta $0200
     sta $0204
     clc

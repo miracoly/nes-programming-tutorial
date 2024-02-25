@@ -14,14 +14,21 @@ PPU_OAM_DMA = $4014
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Controller ports & buttons
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-JOYPAD1       = $4016
-JOYPAD2       = $4017
+JOYPAD1 = $4016
+JOYPAD2 = $4017
 
-BUTTON_A      = $80                 ; 10000000
-BUTTON_B      = $40                 ; 01000000
+BUTTON_A = $80                      ; 10000000
+BUTTON_B = $40                      ; 01000000
 BUTTON_SELECT = $20                 ; 00100000
-BUTTON_START  = $10                 ; 00010000
-BUTTON_UP     = $08                 ; 00001000
-BUTTON_DOWN   = $04                 ; 00000100
-BUTTON_LEFT   = $02                 ; 00000010
-BUTTON_RIGHT  = $01                 ; 00000001
+BUTTON_START = $10                  ; 00010000
+BUTTON_UP = $08                     ; 00001000
+BUTTON_DOWN = $04                   ; 00000100
+BUTTON_LEFT = $02                   ; 00000010
+BUTTON_RIGHT = $01                  ; 00000001
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Player Movement
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+MAX_SPEED = 240                     ; speed limit in 1/256 px/frame
+ACCEL = 2                           ; movement acceleration in 1/256 px/frame^2
+BRAKE = 10                           ; movement acceleration in 1/256 px/frame^2
