@@ -29,6 +29,6 @@ BUTTON_RIGHT = $01                  ; 00000001
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Player Movement
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-MAX_SPEED = 240                     ; speed limit in 1/256 px/frame
+MAX_SPEED = 120                     ; speed limit in 1/256 px/frame
 ACCEL = 2                           ; movement acceleration in 1/256 px/frame^2
-BRAKE = 10                           ; movement acceleration in 1/256 px/frame^2
+BRAKE = 4                           ; movement acceleration in 1/256 px/frame^2

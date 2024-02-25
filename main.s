@@ -179,6 +179,7 @@ nmi:
     and #BUTTON_RIGHT
     beq @not_right
     lda velo_x
+    bmi @not_right
     clc
     adc #ACCEL
     cmp #MAX_SPEED
@@ -189,19 +190,39 @@ nmi:
     jmp @check_left_button
 @not_right:
     lda velo_x
+    bmi @check_left_button
     cmp #BRAKE
     bcs :+
     lda #BRAKE+1                    ; force it to be brake + 1 for carry flag
 :
-    sec
-    sbc #ACCEL
+    sbc #BRAKE
     sta velo_x
 
 @check_left_button:
     lda buttons
     and #BUTTON_LEFT
-    beq @check_down_button
-    dec pos_x
+    beq @not_left
+    lda velo_x
+    beq :+
+    bpl @not_left
+:
+    sec
+    sbc #ACCEL
+    cmp #256-MAX_SPEED
+    bcs :+
+    lda #256-MAX_SPEED
+:
+    sta velo_x
+    jmp @check_down_button
+@not_left:
+    lda velo_x
+    bpl @check_down_button
+    cmp #256-BRAKE
+    bcc :+
+    lda #256-BRAKE
+:
+    adc #BRAKE
+    sta velo_x
 @check_down_button:
     lda buttons
     and #BUTTON_DOWN
@@ -215,6 +236,9 @@ nmi:
 :
 @udpate_sprite_pos:
     lda velo_x
+    bpl :+
+    dec pos_x+1
+:
     clc
     adc pos_x
     sta pos_x
